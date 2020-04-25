@@ -25,8 +25,8 @@ def undistort_img(img, camera_matrix, dist_coefs, crop=True):
     h, w = img.shape[:2]
 
     # undistort
-    newcameramtx, roi = cv.getOptimalNewCameraMatrix(camera_matrix, dist_coefs, (wL, hL), 1, (wL, hL))
-    dst = cv.undistort(imgR, camera_matrix, dist_coefs, None, newcameramtx)
+    newcameramtx, roi = cv.getOptimalNewCameraMatrix(camera_matrix, dist_coefs, (w, h), 1, (w, h))
+    dst = cv.undistort(img, camera_matrix, dist_coefs, None, newcameramtx)
 
     # crop and save the image
     if crop:
