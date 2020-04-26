@@ -35,7 +35,7 @@ if __name__ == "__main__":
             coords.append(np.array([x,y]))
 
     img = cv.imread('images/24in.jpg')
-    camera_matrix, dist_coefs = camera_calibration.load_pickle_data(constants.CALIB_LOC)[1:3]
+    camera_matrix, dist_coefs = camera_calibration.load_pickle_data(constants.CALIB_LOC)
     
     img = camera_calibration.undistort_img(img, camera_matrix, dist_coefs)
 
