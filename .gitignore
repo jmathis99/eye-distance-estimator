@@ -128,13 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-<<<<<<< HEAD
 # Shape predictor file
 shape_predictor_68_face_landmarks.dat
-=======
 # Pickle Files
 *.pickle
 
 # Local images
 images/
->>>>>>> distance_estimation
