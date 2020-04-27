@@ -26,10 +26,16 @@ while True:
     if left is not None and right is not None:
         for (x, y) in left:
             image[y, x] = [0, 0, 255]
-        print("Left Eye Distance: ", estimator.compute([left[0], left[3]]))
+        leftDistance = estimator.compute([left[0], left[3]])
+        #print("Left Eye Distance: ", estimator.compute([left[0], left[3]]))
         for (x, y) in right:
             image[y, x] = [0, 255, 0]
-        print("Right Eye Distance: ", estimator.compute([right[0], right[3]]))
+        rightDistance = estimator.compute([right[0], right[3]])
+        #print("Right Eye Distance: ", estimator.compute([right[0], right[3]]))
+        cv.putText(image, "Left Eye Distance: {}".format(leftDistance), 
+            (0, 50), cv.FONT_HERSHEY_SIMPLEX, .5, [255,0,0])
+        cv.putText(image, "Right Eye Distance: {}".format(rightDistance), 
+            (0, 75), cv.FONT_HERSHEY_SIMPLEX, .5, [255,0,0])
     cv.imshow("video", image)
     key = cv.waitKey(1)
     if key == ord('q'):
