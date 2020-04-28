@@ -4,6 +4,7 @@ import eye_detect
 import distance_estimation
 import constants
 import camera_calibration
+import numpy as np
 
 """
 This file in its present state reads a video stream from camera 0
@@ -19,9 +20,12 @@ Other considerations:
 
 cap = cv.VideoCapture(0)
 (matrix, distCoeffs) = camera_calibration.load_pickle_data(constants.CALIB_LOC)
+matrix = np.array(matrix)
+distCoeffs = np.array(distCoeffs)
 estimator = distance_estimation.distance_estimator(matrix, constants.EYE_WIDTH/2.54/10)
 while True:
     ret, image = cap.read()
+    image = cv.undistort(image, matrix, distCoeffs)
     left, right = eye_detect.detectEyes(image)
     if left is not None and right is not None:
         for (x, y) in left:
