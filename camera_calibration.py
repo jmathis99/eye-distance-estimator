@@ -106,3 +106,21 @@ def calibrate(img_dir, pattern_size, square_size=1, threads=1, filename=None):
             pickle.dump((camera_matrix, dist_coefs), file)
     
     return camera_matrix, dist_coefs
+
+if __name__ == "__main__":
+    import argparse
+    import os
+
+    left_num = 0
+
+    parser = argparse.ArgumentParser(prog="camera_calibration",
+        description= "Run calibration")
+    parser.add_argument('-p', '--pattern', nargs=2, metavar=('height', 'width'), type=int, help="Pattern Size")
+    parser.add_argument('-s', '--size', default=1, type=int, help="Square Size")
+    parser.add_argument('-d', '--dir', default='data', help="Input File folder")
+    parser.add_argument('-t', '--threads', default=1, type=int, help="Number of Threads")
+    parser.add_argument('-o', '--output', default=None, help="Output File Name")
+
+    args = parser.parse_args()
+
+    calibrate(args.dir, (args.pattern[0], args.pattern[1]), args.size, args.threads, args.output)
