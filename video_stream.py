@@ -37,7 +37,6 @@ while True:
         for (x, y) in right:
             image[y, x] = [0, 255, 0]
         rightDistance = estimator.compute([right[0], right[3]])
-        print("Right Eye Distance: ", estimator.compute([right[0], right[3]]))
         cv.putText(image, "Left Eye Distance: {:.3f}".format(leftDistance), 
             (0, 50), cv.FONT_HERSHEY_SIMPLEX, .5, [255,0,0])
         cv.putText(image, "Right Eye Distance: {:.3f}".format(rightDistance), 
