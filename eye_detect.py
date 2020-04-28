@@ -6,8 +6,8 @@ from imutils import face_utils
 import numpy as np
 
 """
-TODO: finish this so that it can return data from multiple faces. Will
-      likely require a refactoring of methods that use this.
+This file implements eye detection in a photo. It will detect
+    one pair of eyes in a frame and return the points.
 """
 
 detector = dlib.get_frontal_face_detector()
