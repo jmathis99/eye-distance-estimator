@@ -75,7 +75,7 @@ def calibrate(img_dir, pattern_size, square_size=1, threads=1, filename=None):
         print('           %s... OK' % fn)
         return (corners.reshape(-1, 2), pattern_points)
     
-    img_names = glob(img_dir)
+    img_names = glob(img_dir + '/*')
     pattern_points = np.zeros((np.prod(pattern_size), 3), np.float32)
     pattern_points[:, :2] = np.indices(pattern_size).T.reshape(-1, 2)
     pattern_points *= square_size
