@@ -9,6 +9,7 @@ import constants
 
 """
 This file detects eyes in a photo passed as an argument.
+Usage: detect_photo.py PATH_TO_IMAGE
 """
 
 parser = argparse.ArgumentParser()
@@ -20,6 +21,7 @@ args = parser.parse_args()
 estimator = distance_estimation.distance_estimator(matrix, constants.EYE_WIDTH/2.54/10)
 
 image = cv.imread(args.image)
+image = cv.undistort(image, matrix, distCoeffs)
 left, right = eye_detect.detectEyes(image)
 for (x, y) in left:
     image[y, x] = [0, 0, 255]
