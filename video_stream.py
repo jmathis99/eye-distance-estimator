@@ -5,6 +5,7 @@ import distance_estimation
 import constants
 import camera_calibration
 import numpy as np
+import time
 
 """
 This file in its present state reads a video stream from camera 0
@@ -24,6 +25,7 @@ matrix = np.array(matrix)
 distCoeffs = np.array(distCoeffs)
 estimator = distance_estimation.distance_estimator(matrix, constants.EYE_WIDTH/2.54/10)
 while True:
+    start = time.time()
     ret, image = cap.read()
     image = cv.undistort(image, matrix, distCoeffs)
     left, right = eye_detect.detectEyes(image)
@@ -35,11 +37,14 @@ while True:
         for (x, y) in right:
             image[y, x] = [0, 255, 0]
         rightDistance = estimator.compute([right[0], right[3]])
-        #print("Right Eye Distance: ", estimator.compute([right[0], right[3]]))
-        cv.putText(image, "Left Eye Distance: {}".format(leftDistance), 
+        print("Right Eye Distance: ", estimator.compute([right[0], right[3]]))
+        cv.putText(image, "Left Eye Distance: {:.3f}".format(leftDistance), 
             (0, 50), cv.FONT_HERSHEY_SIMPLEX, .5, [255,0,0])
-        cv.putText(image, "Right Eye Distance: {}".format(rightDistance), 
+        cv.putText(image, "Right Eye Distance: {:.3f}".format(rightDistance), 
             (0, 75), cv.FONT_HERSHEY_SIMPLEX, .5, [255,0,0])
+    end = time.time()
+    cv.putText(image, "FPS: {fps:.2f}  Latency: {lat:.2f} ms".format(fps=1 / (end - start), 
+        lat=(end-start)*1000), (0, 25), cv.FONT_HERSHEY_SIMPLEX, .5, [255,0,0])
     cv.imshow("video", image)
     key = cv.waitKey(1)
     if key == ord('q'):
