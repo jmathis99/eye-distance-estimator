@@ -15,7 +15,7 @@ class distance_estimator:
         self.calibration_matrix = calibration_matrix
         self.object_size = object_size
 
-    def compute(self, pixel_size):
+    def compute(self, coords):
         """
         Estimates the z-axis distance from the camera.
 
@@ -23,6 +23,7 @@ class distance_estimator:
         :param focal_length: focal_length of camera, currently assuming no distortion
         :param object_width: world width of objects, same units as focal_length
         """
+        pixel_width = np.linalg.norm(coords[0]-coords[1])
         return self.object_size*self.calibration_matrix[0][0]/pixel_width
 
 # Example using the class
@@ -34,7 +35,7 @@ if __name__ == "__main__":
             coords.append(np.array([x,y]))
 
     img = cv.imread('images/24in.jpg')
-    camera_matrix, dist_coefs = camera_calibration.load_pickle_data(constants.CALIB_LOC)[1:3]
+    camera_matrix, dist_coefs = camera_calibration.load_pickle_data(constants.CALIB_LOC)
     
     img = camera_calibration.undistort_img(img, camera_matrix, dist_coefs)
 
@@ -45,7 +46,6 @@ if __name__ == "__main__":
     # Create an estimator with object size in inches
     estimator = distance_estimator(camera_matrix, constants.EYE_WIDTH/2.54/10)
 
-    pixel_width = np.linalg.norm(coords[0]-coords[1])
     print('Distance Estimate:')
-    print(estimator.compute(pixel_width))
+    print(estimator.compute(coords))
 
