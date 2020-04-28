@@ -8,6 +8,7 @@ import sys
 import getopt
 from glob import glob
 import pickle
+import numpy as np
 
 def load_pickle_data(calib_loc):
     """
@@ -52,6 +53,27 @@ def calibrate(img_dir, pattern_size, square_size=1, threads=1, filename=None):
     :param filename: specify if you would like the output to be saved to a pickle file
     :returns 
     """
+
+    def processImage(fn):
+        # Taken from OpenCV calibrate.py
+        print('processing %s... ' % fn)
+        img = cv.imread(fn, 0)
+        if img is None:
+            print("Failed to load", fn)
+            return None
+
+        assert w == img.shape[1] and h == img.shape[0], ("size: %d x %d ... " % (img.shape[1], img.shape[0]))
+        found, corners = cv.findChessboardCorners(img, pattern_size)
+        if found:
+            term = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_COUNT, 30, 0.1)
+            cv.cornerSubPix(img, corners, (5, 5), (-1, -1), term)
+
+        if not found:
+            print('chessboard not found')
+            return None
+
+        print('           %s... OK' % fn)
+        return (corners.reshape(-1, 2), pattern_points)
     
     img_names = glob(img_dir)
     pattern_points = np.zeros((np.prod(pattern_size), 3), np.float32)
@@ -62,12 +84,12 @@ def calibrate(img_dir, pattern_size, square_size=1, threads=1, filename=None):
     img_points = []
     h, w = cv.imread(img_names[0], cv.IMREAD_GRAYSCALE).shape[:2]
 
-    if threads_num <= 1:
+    if threads <= 1:
         chessboards = [processImage(fn) for fn in img_names]
     else:
-        print("Run with %d threads..." % threads_num)
+        print("Run with %d threads..." % threads)
         from multiprocessing.dummy import Pool as ThreadPool
-        pool = ThreadPool(threads_num)
+        pool = ThreadPool(threads)
         chessboards = pool.map(processImage, img_names)
 
     chessboards = [x for x in chessboards if x is not None]
@@ -84,33 +106,3 @@ def calibrate(img_dir, pattern_size, square_size=1, threads=1, filename=None):
             pickle.dump((camera_matrix, dist_coefs), file)
     
     return camera_matrix, dist_coefs
-
-
-
-def processImage(fn):
-    # Taken from OpenCV calibrate.py
-    print('processing %s... ' % fn)
-    img = cv.imread(fn, 0)
-    if img is None:
-        print("Failed to load", fn)
-        return None
-
-    assert w == img.shape[1] and h == img.shape[0], ("size: %d x %d ... " % (img.shape[1], img.shape[0]))
-    found, corners = cv.findChessboardCorners(img, pattern_size)
-    if found:
-        term = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_COUNT, 30, 0.1)
-        cv.cornerSubPix(img, corners, (5, 5), (-1, -1), term)
-
-    if debug_dir:
-        vis = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
-        cv.drawChessboardCorners(vis, pattern_size, corners, found)
-        _path, name, _ext = splitfn(fn)
-        outfile = os.path.join(debug_dir, name + '_chess.png')
-        cv.imwrite(outfile, vis)
-
-    if not found:
-        print('chessboard not found')
-        return None
-
-    print('           %s... OK' % fn)
-    return (corners.reshape(-1, 2), pattern_points)
